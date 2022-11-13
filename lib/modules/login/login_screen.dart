@@ -1,12 +1,22 @@
 import 'package:bmi_a/shared/components/components.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   var formKey = GlobalKey<FormState>();
+
+  bool isPassword =true;
+  IconData suffixIcon = Icons.visibility;
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +61,18 @@ class LoginScreen extends StatelessWidget {
                     type: TextInputType.visiblePassword,
                     label: 'Password',
                     prefixIcon: Icons.lock,
-                    suffixIcon: Icons.remove_red_eye,
-                    isPassword: true,
+                    suffixIcon: isPassword ? Icons.visibility : Icons.visibility_off,
+                    isPassword: isPassword,
                     validate: (value) {
                       if((value??'').isEmpty){
                         return'password is too short';
                       }
                       return null;
+                    },
+                    suffixIconOnPressed: () {
+                      setState(() {
+                        isPassword = !isPassword;
+                      });
                     },
                   ),
                   const SizedBox(

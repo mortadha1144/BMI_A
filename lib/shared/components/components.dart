@@ -34,6 +34,7 @@ Widget defaultFormField({
   required String label,
   required IconData prefixIcon,
   IconData? suffixIcon,
+  void Function()? suffixIconOnPressed,
 }) =>
     TextFormField(
       controller: controller,
@@ -46,6 +47,9 @@ Widget defaultFormField({
         labelText: label,
         border: const OutlineInputBorder(),
         prefixIcon: Icon(prefixIcon),
-        suffixIcon: Icon(suffixIcon),
+        suffixIcon: IconButton(
+          icon: Icon(suffixIcon),
+          onPressed: suffixIcon != null ?suffixIconOnPressed:null,
+        ),
       ),
     );
