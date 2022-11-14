@@ -1,4 +1,4 @@
-import 'package:bmi_a/shared/components/components.dart';
+import 'package:udemy/shared/components/components.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
