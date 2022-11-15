@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:udemy/shared/components/components.dart';
+import 'package:udemy/shared/components/constants.dart';
 
 class NewTasksScreen extends StatelessWidget {
   const NewTasksScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'New Tasks',
-        style: TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
+    return ListView.separated(
+      itemBuilder: (context, index) =>buildTaskItem(),
+      separatorBuilder: (context, index) => Padding(
+        padding:const EdgeInsetsDirectional.only(start: 20),
+        child: Divider(
+          height: 4,
+          color: Colors.grey[400],
         ),
       ),
+      itemCount: tasks.length,
     );
   }
 }
