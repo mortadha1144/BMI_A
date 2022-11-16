@@ -8,6 +8,7 @@ import 'package:udemy/modules/new_tasks/new_tasks_screen.dart';
 import 'package:udemy/shared/components/components.dart';
 import 'package:intl/intl.dart';
 import 'package:udemy/shared/components/constants.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({Key? key}) : super(key: key);
@@ -39,8 +40,6 @@ class _HomeLayoutState extends State<HomeLayout> {
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
 
-
-
   @override
   void initState() {
     super.initState();
@@ -56,7 +55,11 @@ class _HomeLayoutState extends State<HomeLayout> {
           titles[currentIndex],
         ),
       ),
-      body: tasks.isEmpty ?  const Center(child: CircularProgressIndicator()): screens[currentIndex],
+      body: ConditionalBuilder(
+        condition: tasks.isNotEmpty,
+        builder: (context) => screens[currentIndex],
+        fallback: (context) => const Center(child: CircularProgressIndicator()),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (isBottomSheetShown) {
@@ -66,10 +69,14 @@ class _HomeLayoutState extends State<HomeLayout> {
                 date: dateController.text,
                 time: timeController.text,
               ).then((value) {
-                Navigator.pop(context);
-                isBottomSheetShown = false;
-                setState(() {
-                  fabIcon = Icons.edit;
+                getDataFromDatabase(database).then((value) {
+                  Navigator.pop(context);
+                  setState(() {
+                    isBottomSheetShown = false;
+                    fabIcon = Icons.edit;
+                    tasks = value;
+                    print(tasks);
+                  });
                 });
               });
             }
@@ -202,9 +209,9 @@ class _HomeLayoutState extends State<HomeLayout> {
     database = await openDatabase(
       'todo.db',
       version: 1,
-      onCreate: (db, version) async {
+      onCreate: (database, version) async {
         print('database created');
-        await db
+        await database
             .execute(
           'CREATE TABLE Test (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT,status TEXT)',
         )
@@ -214,9 +221,12 @@ class _HomeLayoutState extends State<HomeLayout> {
           print('Error When Creating Table ${error.toString()}');
         });
       },
-      onOpen: (db) {
-        getDataFromDatabase(db).then((value) {
-          tasks=value;
+      onOpen: (database) {
+        getDataFromDatabase(database).then((value) {
+          setState(() {
+            tasks = value;
+            print(tasks);
+          });
         });
         //{id: 1, title: first task, date: 02222, time: 891, status: new}
         print('database opened');
@@ -242,8 +252,7 @@ class _HomeLayoutState extends State<HomeLayout> {
     });
   }
 
-  Future<List<Map>> getDataFromDatabase(database) async{
+  Future<List<Map>> getDataFromDatabase(database) async {
     return await database!.rawQuery('SELECT * FROM Test');
   }
-
 }
