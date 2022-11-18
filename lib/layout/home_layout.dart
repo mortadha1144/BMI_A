@@ -14,27 +14,25 @@ import 'package:udemy/shared/cubit/cubit.dart';
 import 'package:udemy/shared/cubit/states.dart';
 
 class HomeLayout extends StatelessWidget {
-   HomeLayout({Key? key}) : super(key: key);
-
-
-
-
+  HomeLayout({Key? key}) : super(key: key);
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
-  bool isBottomSheetShown = false;
-  IconData fabIcon = Icons.edit;
+
   TextEditingController titleController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AppCubit(),
-      child: BlocConsumer<AppCubit,AppStates>(
-        listener: (context, state) {},
+      create: (context) => AppCubit()..createDatabase(),
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (context, state) {
+          if(state is AppInsertDatabaseState){
+            Navigator.pop(context);
+          }
+        },
         builder: (context, state) {
           AppCubit cubit = AppCubit.get(context);
           return Scaffold(
@@ -47,132 +45,135 @@ class HomeLayout extends StatelessWidget {
             body: ConditionalBuilder(
               condition: true,
               builder: (context) => cubit.screens[cubit.currentIndex],
-              fallback: (context) => const Center(child: CircularProgressIndicator()),
+              fallback: (context) =>
+                  const Center(child: CircularProgressIndicator()),
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                if (isBottomSheetShown) {
+                if (cubit.isBottomSheetShown) {
                   if (formKey.currentState!.validate()) {
-                    insertToDatabase(
+                    cubit.insertToDatabase(
                       title: titleController.text,
                       date: dateController.text,
                       time: timeController.text,
-                    ).then((value) {
-                      getDataFromDatabase(database).then((value) {
-                        Navigator.pop(context);
-                        // setState(() {
-                        //   isBottomSheetShown = false;
-                        //   fabIcon = Icons.edit;
-                        //   tasks = value;
-                        //   print(tasks);
-                        // });
-                      });
-                    });
+                    );
+                    //Navigator.pop(context);
+                    // insertToDatabase(
+                    //   title: titleController.text,
+                    //   date: dateController.text,
+                    //   time: timeController.text,
+                    // ).then((value) {
+                    //   getDataFromDatabase(database).then((value) {
+                    //     Navigator.pop(context);
+                    //     // setState(() {
+                    //     //   isBottomSheetShown = false;
+                    //     //   fabIcon = Icons.edit;
+                    //     //   tasks = value;
+                    //     //   print(tasks);
+                    //     // });
+                    //   });
+                    // });
                   }
                 } else {
                   scaffoldKey.currentState!
                       .showBottomSheet(
                         (context) => Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.all(20),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              height: 20,
+                          color: Colors.white,
+                          padding: const EdgeInsets.all(20),
+                          child: Form(
+                            key: formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                defaultFormField(
+                                  controller: titleController,
+                                  type: TextInputType.text,
+                                  validate: (value) {
+                                    if ((value ?? '').isEmpty) {
+                                      return 'title must not be empty';
+                                    }
+                                    return null;
+                                  },
+                                  label: 'Task Title',
+                                  prefixIcon: Icons.title,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                defaultFormField(
+                                  controller: dateController,
+                                  type: TextInputType.datetime,
+                                  onTap: () {
+                                    showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.parse('2022-11-30'),
+                                    ).then((value) => dateController.text =
+                                        DateFormat('dd/MM/yyyy')
+                                            .format(value!)
+                                            .toString());
+                                  },
+                                  validate: (value) {
+                                    if ((value ?? '').isEmpty) {
+                                      return 'date must not be empty';
+                                    }
+                                    return null;
+                                  },
+                                  label: 'Task Time',
+                                  prefixIcon: Icons.calendar_month_outlined,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                defaultFormField(
+                                  controller: timeController,
+                                  type: TextInputType.datetime,
+                                  onTap: () {
+                                    showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now(),
+                                    ).then((value) => timeController.text =
+                                        value!.format(context));
+                                  },
+                                  validate: (value) {
+                                    if ((value ?? '').isEmpty) {
+                                      return 'time must not be empty';
+                                    }
+                                    return null;
+                                  },
+                                  label: 'Task Time',
+                                  prefixIcon: Icons.watch_later_outlined,
+                                ),
+                              ],
                             ),
-                            defaultFormField(
-                              controller: titleController,
-                              type: TextInputType.text,
-                              validate: (value) {
-                                if ((value ?? '').isEmpty) {
-                                  return 'title must not be empty';
-                                }
-                                return null;
-                              },
-                              label: 'Task Title',
-                              prefixIcon: Icons.title,
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            defaultFormField(
-                              controller: dateController,
-                              type: TextInputType.datetime,
-                              onTap: () {
-                                showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime.parse('2022-11-30'),
-                                ).then((value) => dateController.text =
-                                    DateFormat('dd/MM/yyyy')
-                                        .format(value!)
-                                        .toString());
-                              },
-                              validate: (value) {
-                                if ((value ?? '').isEmpty) {
-                                  return 'date must not be empty';
-                                }
-                                return null;
-                              },
-                              label: 'Task Time',
-                              prefixIcon: Icons.calendar_month_outlined,
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            defaultFormField(
-                              controller: timeController,
-                              type: TextInputType.datetime,
-                              onTap: () {
-                                showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                ).then((value) =>
-                                timeController.text = value!.format(context));
-                              },
-                              validate: (value) {
-                                if ((value ?? '').isEmpty) {
-                                  return 'time must not be empty';
-                                }
-                                return null;
-                              },
-                              label: 'Task Time',
-                              prefixIcon: Icons.watch_later_outlined,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    elevation: 20,
-                  )
+                        elevation: 20,
+                      )
                       .closed
                       .then((value) {
-                    isBottomSheetShown = false;
-                    // setState(() {
-                    //   fabIcon = Icons.edit;
-                    // });
+                    cubit.changeBottomSheetState(
+                      isShowon: false,
+                      icon: Icons.edit,
+                    );
                   });
-                  isBottomSheetShown = true;
-                  // setState(() {
-                  //   fabIcon = Icons.add;
-                  // });
+                  cubit.changeBottomSheetState(
+                    isShowon: true,
+                    icon: Icons.add,
+                  );
                 }
               },
-              child: Icon(fabIcon),
+              child: Icon(cubit.fabIcon),
             ),
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               currentIndex: cubit.currentIndex,
               onTap: (value) {
-
                 cubit.changeIndex(value);
-                // setState(() {
-                //   currentIndex = value;
-                // });
               },
               items: const [
                 BottomNavigationBarItem(
