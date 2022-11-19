@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:udemy/examples/bloc_youtube/ui/screens/counter/counter_screen.dart';
 import 'package:udemy/layout/home_layout.dart';
 import 'package:udemy/modules/bmi/bmi_screen.dart';
 import 'package:udemy/modules/counter/counter_screen.dart';
@@ -18,9 +19,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return  const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeLayout(),
+      home: CounterScreenE(),
     );
   }
 }

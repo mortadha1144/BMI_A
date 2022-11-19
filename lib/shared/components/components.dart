@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:udemy/shared/cubit/cubit.dart';
 
 Widget defaultButton({
   double width = double.infinity,
@@ -58,33 +59,61 @@ Widget defaultFormField({
       ),
     );
 
-Widget buildTaskItem(Map model) =>
-    Padding(
+Widget buildTaskItem(Map model, context) => Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
-           CircleAvatar(
+          CircleAvatar(
             radius: 40,
             child: Text('${model['time']}'),
           ),
           const SizedBox(
             width: 20,
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children:  [
-              Text(
-                '${model['title']}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${model['title']}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                '${model['date']}',
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ],
+                Text(
+                  '${model['date']}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          IconButton(
+            onPressed: () {
+              AppCubit.get(context).updateData(
+                status: 'done',
+                id: model['id'],
+              );
+            },
+            icon: const Icon(
+              Icons.check_box,
+              color: Colors.green,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              AppCubit.get(context).updateData(
+                status: 'archived',
+                id: model['id'],
+              );
+            },
+            icon: const Icon(
+              Icons.archive,
+              color: Colors.black45,
+            ),
           ),
         ],
       ),

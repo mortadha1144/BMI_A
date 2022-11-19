@@ -48,12 +48,7 @@ class AppCubit extends Cubit<AppStates> {
         });
       },
       onOpen: (database) {
-        getDataFromDatabase(database).then((value) {
-          tasks = value;
-          print(tasks);
-
-          emit(AppGetDatabaseState());
-        });
+        getDataFromDatabase(database);
         //{id: 1, title: first task, date: 02222, time: 891, status: new}
         print('database opened');
       },
@@ -63,24 +58,19 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-   insertToDatabase({
+  insertToDatabase({
     required String title,
     required String date,
     required String time,
   }) async {
-     await database!.transaction((txn) {
+    await database!.transaction((txn) {
       txn
           .rawInsert(
               'INSERT INTO Test(title,date,time,status) VALUES ("$title","$date","$time","new")')
           .then((value) {
         print('$value inserted success');
         emit(AppInsertDatabaseState());
-        getDataFromDatabase(database).then((value) {
-          tasks = value;
-          print(tasks);
-
-          emit(AppGetDatabaseState());
-        });
+        getDataFromDatabase(database);
       }).catchError((error) {
         print('Error When Inserting New Record  ${error.toString()}');
       });
@@ -88,8 +78,27 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  Future<List<Map>> getDataFromDatabase(database) async {
-    return await database!.rawQuery('SELECT * FROM Test');
+  void getDataFromDatabase(database) {
+    emit(AppGetDatabaseLoadingState());
+    database!.rawQuery('SELECT * FROM Test').then((value) {
+      tasks = value;
+      print(tasks);
+      value.forEach((element) {
+        print(element['status']);
+      });
+
+      emit(AppGetDatabaseState());
+    });
+  }
+
+  void updateData({
+    required String status,
+    required int id,
+  }) async {
+    database!.rawUpdate(
+        'UPDATE Test SET status = ? WHERE id = ?', [status, id]).then((value) {
+      emit(AppUpdateDatabaseState());
+    });
   }
 
   bool isBottomSheetShown = false;
