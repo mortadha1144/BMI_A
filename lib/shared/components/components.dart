@@ -118,3 +118,61 @@ Widget buildTaskItem(Map model, context) => Padding(
         ],
       ),
     );
+
+Widget buildArticleItem()=> Padding(
+  padding: const EdgeInsets.all(20.0),
+  child: Row(
+    children: [
+      Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            10,
+          ),
+          image: const DecorationImage(
+              image: NetworkImage(
+                  'https://img.youm7.com/large/201909281023402340.jpg'),
+              fit: BoxFit.cover),
+        ),
+      ),
+      const SizedBox(
+        width: 20,
+      ),
+      Expanded(
+        child: SizedBox(
+          height: 120,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Expanded(
+                child: Text(
+                  'Title',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                '2022-11-20T11:30:00Z',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      )
+    ],
+  ),
+);
+
+Widget myDivider()=>Padding(
+  padding: const EdgeInsetsDirectional.only(start: 20),
+  child: Divider(
+    thickness: 0.7,
+    color: Colors.grey[400],
+  ),
+);
