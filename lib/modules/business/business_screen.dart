@@ -10,20 +10,11 @@ class BusinessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<NewsCubit,NewsStates>(
-      listener: (context, state) {
-      },
+    return BlocConsumer<NewsCubit, NewsStates>(
+      listener: (context, state) {},
       builder: (context, state) {
-        return ConditionalBuilder(
-          condition: state is! NewsGetBusinessLoadingState,
-          builder: (context) => ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) => buildArticleItem(),
-            separatorBuilder: (context, index) =>myDivider(),
-            itemCount: 10,
-          ),
-          fallback: (context) => const Center(child: CircularProgressIndicator()),
-        );
+        List<dynamic> list = NewsCubit.get(context).business;
+        return articleBuilder(list,context);
       },
     );
   }

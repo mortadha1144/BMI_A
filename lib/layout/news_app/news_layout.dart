@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:udemy/layout/news_app/cubit/cubit.dart';
 import 'package:udemy/layout/news_app/cubit/states.dart';
+import 'package:udemy/shared/cubit/cubit.dart';
 import 'package:udemy/shared/network/remote/dio_helper.dart';
 
 class NewsLayout extends StatelessWidget {
@@ -19,7 +20,20 @@ class NewsLayout extends StatelessWidget {
             appBar: AppBar(
               title: const Text('News App'),
               actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.search,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    AppCubit.get(context).changeMode();
+                  },
+                  icon: const Icon(
+                    Icons.brightness_4_outlined,
+                  ),
+                ),
               ],
             ),
             bottomNavigationBar: BottomNavigationBar(
