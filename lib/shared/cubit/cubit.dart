@@ -5,6 +5,7 @@ import 'package:udemy/modules/archived_tasks/archived_tasks_screen.dart';
 import 'package:udemy/modules/done_tasks/done_tasks_screen.dart';
 import 'package:udemy/modules/new_tasks/new_tasks_screen.dart';
 import 'package:udemy/shared/cubit/states.dart';
+import 'package:udemy/shared/network/local/cash_helper.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
@@ -115,8 +116,19 @@ class AppCubit extends Cubit<AppStates> {
 
   bool isDark = false;
 
-  void changeMode() {
-    isDark=!isDark;
-    emit(AppChangeModeState());
+  void changeMode({bool? fromShared}) {
+    if(fromShared != null) {
+      isDark = fromShared;
+      emit(AppChangeModeState());
+      print('from shared');
+    } else {
+      isDark = !isDark;
+      CashHelper.putBoolean(key: 'isDark', value: isDark).then((value) {
+        emit(AppChangeModeState());
+      });
+      print('not from shared');
+    }
+
+
   }
 }

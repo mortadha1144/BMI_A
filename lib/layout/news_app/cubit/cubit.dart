@@ -56,6 +56,7 @@ class NewsCubit extends Cubit<NewsStates> {
   List<dynamic> business = [];
   List<dynamic> sports = [];
   List<dynamic> science = [];
+  List<dynamic> search = [];
 
   void getBusiness() {
     emit(NewsGetBusinessLoadingState());
@@ -69,7 +70,7 @@ class NewsCubit extends Cubit<NewsStates> {
     ).then((value) {
       //print(value?.data['articles'][0]['title'].toString());
       business = value?.data['articles'];
-      print(business[0]['title']);
+      //print(business[0]['title']);
       emit(NewsGetBusinessSuccessState());
     }).catchError((error) {
       print(error.toString());
@@ -90,7 +91,7 @@ class NewsCubit extends Cubit<NewsStates> {
       ).then((value) {
         //print(value?.data['articles'][0]['title'].toString());
         sports = value?.data['articles'];
-        print(sports[0]['title']);
+        //print(sports[0]['title']);
         emit(NewsGetSportsSuccessState());
       }).catchError((error) {
         print(error.toString());
@@ -114,7 +115,7 @@ class NewsCubit extends Cubit<NewsStates> {
       ).then((value) {
         //print(value?.data['articles'][0]['title'].toString());
         science = value?.data['articles'];
-        print(science[0]['title']);
+        //print(science[0]['title']);
         emit(NewsGetScienceSuccessState());
       }).catchError((error) {
         print(error.toString());
@@ -123,6 +124,29 @@ class NewsCubit extends Cubit<NewsStates> {
     }else{
       emit(NewsGetScienceSuccessState());
     }
+
+  }
+  void getSearch(String value) {
+
+
+    emit(NewsGetSearchLoadingState());
+    search=[];
+    DioHelper.getData(
+      url: 'v2/everything',
+      query: {
+        'q': value,
+        'apiKey': '7963b3318b6f4b82a4569760983b2d15',
+      },
+    ).then((value) {
+      //print(value?.data['articles'][0]['title'].toString());
+      search = value?.data['articles'];
+      //print(science[0]['title']);
+      emit(NewsGetSearchSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(NewsGetSearchErrorState(error.toString()));
+    });
+
 
   }
 }

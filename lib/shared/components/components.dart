@@ -187,3 +187,10 @@ Widget articleBuilder(List<dynamic> list,context) =>
       ),
       fallback: (context) => const Center(child: CircularProgressIndicator()),
     );
+
+void navigateTo(context,widget,)=>
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => widget,
+        ));
